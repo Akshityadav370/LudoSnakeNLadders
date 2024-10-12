@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Snakes & Ludo board</title>
+    <style>
+      body {
+        background-color: #d3d3d3;
+      }
+      #board {
+        position: relative;
+        width: 600px;
+        height: 600px;
+        margin: 55px auto;
+        /* margin: auto; */
+        border: 5px solid black;
+        background: conic-gradient(
+          white 0deg 9deg,
+          #000 9deg 10.5deg,
+          #ff033e 10.5deg 19.5deg,
+          #000 19.5deg 21deg,
+          white 21deg 30deg,
+          #000 30deg 31.5deg,
+          #4b9cd3 31.5deg 40.5deg,
+          #000 40.5deg 42deg,
+          white 42deg 51deg,
+          #000 51deg 52.5deg,
+          #1cac78 52.5deg 61.5deg,
+          #000 61.5deg 63deg,
+          white 63deg 72deg,
+          #000 72deg 73.5deg,
+          #ff033e 73.5deg 82.5deg,
+          #000 82.5deg 84deg,
+          #4b9cd3 84deg 93deg,
+          #000 93deg 94.5deg,
+          white 94.5deg 103.5deg,
+          #000 103.5deg 105deg,
+          white 105deg 114deg,
+          #000 114deg 115.5deg,
+          #f0e68c 115.5deg 124.5deg,
+          #000 124.5deg 126deg,
+          white 126deg 135deg,
+          #000 135deg 136.5deg,
+          #4b9cd3 136.5deg 145.5deg,
+          #000 145.5deg 147deg,
+          white 147deg 156deg,
+          #000 156deg 157.5deg,
+          #4b9cd3 157.5deg 166.5deg,
+          #000 166.5deg 168deg,
+          white 168deg 177deg,
+          #000 177deg 178.5deg,
+          #f0e68c 178.5deg 187.5deg,
+          #000 187.5deg 189deg,
+          #1cac78 189deg 198deg,
+          #000 198deg 199.5deg,
+          white 199.5deg 208.5deg,
+          #000 208.5deg 210deg,
+          #ff033e 210deg 219deg,
+          #000 219deg 220.5deg,
+          white 220.5deg 229.5deg,
+          #000 229.5deg 231deg,
+          white 231deg 240deg,
+          #000 240deg 241.5deg,
+          white 241.5deg 250.5deg,
+          #000 250.5deg 252deg,
+          #ff033e 252deg 261deg,
+          #000 261deg 262.5deg,
+          #1cac78 262.5deg 271.5deg,
+          #000 271.5deg 273deg,
+          white 273deg 282deg,
+          #000 282deg 283.5deg,
+          #4b9cd3 283.5deg 292.5deg,
+          #000 292.5deg 294deg,
+          #f0e68c 294deg 303deg,
+          #000 303deg 304.5deg,
+          white 304.5deg 313.5deg,
+          #000 313.5deg 315deg,
+          #ff033e 315deg 324deg,
+          #000 324deg 325.5deg,
+          #f0e68c 325.5deg 334.5deg,
+          #000 334.5deg 336deg,
+          #4b9cd3 336deg 345deg,
+          #000 345deg 346.5deg,
+          #1cac78 346.5deg 355.5deg,
+          #000 355.5deg 357deg,
+          white 357deg 360deg
+        );
+        border-radius: 50%;
+        background-size: 100.75% 100.75%;
+      }
+      #central-circle {
+        position: absolute;
+        width: 450px;
+        height: 450px;
+        background-color: #303591;
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1; /* Ensure it's above the conic gradient */
+        border: 5px solid black;
+      }
+      #home-circle {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        background-color: white;
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1; /* Ensure it's above the conic gradient */
+        border: 5px solid black;
+      }
+      #home-circle p {
+        margin-top: 19px;
+        text-align: center;
+      }
+      .rectangle {
+        position: absolute;
+        width: 30px;
+        height: 100px;
+        background-color: white;
+        border: 5px solid black;
+        transform-origin: bottom center;
+      }
+
+      .rectangle.north {
+        top: -1%;
+        left: 53%;
+        width: 35px;
+        height: 150px;
+        transform: translateX(-50%) rotate(0deg);
+      }
+
+      .rectangle.south {
+        bottom: 35%;
+        left: 48%;
+        height: 150px;
+        transform: translateX(-50%) rotate(180deg);
+      }
+
+      .rectangle.east {
+        top: 32%;
+        right: 30%;
+        width: 35px;
+        height: 150px;
+        transform: translateY(-50%) rotate(90deg);
+      }
+
+      .rectangle.west {
+        top: 35%;
+        left: 30%;
+        width: 35px;
+        height: 150px;
+        transform: translateY(-50%) rotate(-90deg);
+      }
+      .cell {
+        width: 32px;
+        height: 27px;
+        border: 2px solid black;
+      }
+      .red {
+        background-color: #ffb6c1; /* Light Pink */
+      }
+
+      .yellow {
+        background-color: #ffffe0; /* Light Yellow */
+      }
+
+      .blue {
+        background-color: #add8e6; /* Light Blue */
+      }
+
+      .green {
+        background-color: #98fb98; /* Pale Green */
+      }
+      .pawn {
+        position: absolute;
+      }
+      .pawn span {
+        font-size: 3rem;
+      }
+
+      .pawn.north {
+        top: -17%;
+        left: 53%;
+        transform: translateX(-50%);
+        color: red;
+      }
+
+      .pawn.south {
+        bottom: -13%;
+        left: 47%;
+        transform: translateX(-50%);
+        color: rgb(199, 199, 3);
+      }
+
+      .pawn.east {
+        /* top: 42%;
+        right: -10%;
+        transform: translateX(50%); */
+        top: 300px;
+        left: 330px;
+        color: #4d94f2;
+        transition: all 0.5s ease-in-out;
+      }
+
+      .pawn.west {
+        top: 46%;
+        left: -10%;
+        transform: translateX(-50%);
+        color: green;
+      }
+      /* .pawn.temp {
+        top: 195px;
+        left: 240px;
+      } */
+      #buttons {
+        position: absolute;
+        top: 60%;
+        margin-left: -4%;
+        /* border-radius: 70%; */
+      }
+      button {
+        cursor: pointer;
+        /* margin-bottom: 50px; */
+      }
+      #next-number {
+        display: inline;
+        margin-left: 20px;
+        font-size: 5rem;
+        /* border-radius: 50%; */
+      }
+      #nextNumberButton {
+        border-radius: 55%;
+        transform: scale(0.5);
+        /* margin-bottom: -10px; */
+      }
+      #nextNumberButton img{
+        transform: scale(1.1);
+        /* border-radius: 25%; */
+      }
+      #moveButton {
+        position: absolute;
+        border-radius: 55%;
+        transform: scale(0.5);
+        top: 100px;
+        left: 10px;
+      }
+      #moveButton img{
+        /* transform: scale(1.2); */
+        /* border-radius: 25%; */
+        transform: scale(1.1);
+      }
+      #nextNumberButton:disabled {
+        opacity: 0.5;
+        cursor: no-drop;
+      }
+      #moveButton:disabled {
+        opacity: 0.5;
+        cursor: no-drop;
+      }
+      /* #next-number img {
+        border-radius: 50%;
+      } */
+      #ladder-1 {
+        position: absolute;
+        top: 300px;
+        left: 5px;
+        /* opacity: 0.7; */
+        transform: scale(0.7);
+      }
+      #ladder-2 {
+        position: absolute;
+        left: 430px;
+        top: 60px;
+        /* opacity: 0.7; */
+        transform: scale(0.9);
+      }
+      #snake-1 {
+        position: absolute;
+        top: 75px;
+        /* opacity: 0.8; */
+        transform: scale(0.6);
+      }
+      #snake-2 {
+        position: absolute;
+        top: 265px;
+        left: 370px;
+        transform: scale(0.6);
+        /* opacity: 0.8; */
+      }
+      #right {
+        width: 65vw;
+        background-color: #303591;
+      }
+      #left {
+        width: 35vw;
+        height: 100vh;
+        background-color: #004aad;
+      }
+      #game {
+        display: flex;
+      }
+      * {
+        margin: 0;
+      }
+
+      .trapezoid-red {
+        height: 0;
+        width: 15px;
+        border-top: 28px solid #ffb6c1;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        margin-left: 2px;
+      }
+      .trapezoid-green {
+        height: 0;
+        height: 15px;
+        border-top: 25px solid #98fb98;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        margin-left: 2px;
+      }
+      .trapezoid-blue {
+        height: 0;
+        height: 15px;
+        border-top: 25px solid #add8e6;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        margin-left: 2px;
+      }
+      .trapezoid-yellow {
+        height: 0;
+        width: 15px;
+        border-top: 28px solid #ffffe0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        margin-left: 2px;
+      }
+      #circle-1 {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: white;
+        position: absolute;
+        border: 5px solid black;
+        top: 100px;
+        left: 80px;
+      }
+      #circle-2 {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: white;
+        position: absolute;
+        border: 5px solid black;
+        top: 100px;
+        left: 310px;
+      }
+      #circle-3 {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: white;
+        position: absolute;
+        border: 5px solid black;
+        top: 300px;
+        left: 80px;
+      }
+      /* #b-pawn {
+        position: absolute;
+        /* transform: scale(0.5); */
+        
+        /* font-size: 3rem; */
+        /* color: yellow; */
+      
+      #arrow {
+        position: absolute;
+        top: 180px;
+        left: 330px;
+        transform: scale(0.7);
+        z-index: 10;
+        /* transition: all 3s fade-out; */
+      }
+      #left h3 {
+        position: absolute;
+        top: 100px;
+        font-family: sans-serif;
+        font-size: 1.8rem;
+        margin-left: 50px;
+        text-align: center;
+        text-shadow: 2px 2px 4px whitesmoke;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game">
+      <div id="left">
+        <h3>Xansr - Snakes & Ludo Board</h3>
+        <div id="buttons">
+          <button id="nextNumberButton" onclick="nextNumber()">
+            <img src="/images/Screenshot 2023-11-21 at 12.24.51 PM.png"/>
+          </button>
+          <p id="next-number"></p>
+          <br />
+          <button id="moveButton" onclick="movePawn()" disabled><img src="/images/Screenshot 2023-11-21 at 12.25.11 PM.png"/></button>
+        </div>
+      </div>
+      <div id="right">
+        <div id="board">
+          <div id="central-circle">
+            <div id="circle-1"></div>
+            <div id="circle-2"></div>
+            <div id="circle-3"></div>
+            <!-- <img id="token" src="/images/Yellow Token.png"/> -->
+            <img id="arrow" src="/images/Yellow Arrow.png" alt="">
+            <div id="home-circle">
+              <p>Winner Home</p>
+            </div>
+            <div class="rectangle north">
+              <div class="cell red"></div>
+              <div class="cell red"></div>
+              <div class="cell red"></div>
+              <div class="cell red"></div>
+              <div class="cell red"></div>
+              <div class="trapezoid-red"></div>
+            </div>
+            <div class="rectangle south">
+              <div class="cell yellow"></div>
+              <div class="cell yellow"></div>
+              <div class="cell yellow"></div>
+              <div class="cell yellow"></div>
+              <div class="cell yellow"></div>
+              <div class="trapezoid-yellow"></div>
+            </div>
+            <div class="rectangle east">
+              <div class="cell blue"></div>
+              <div class="cell blue"></div>
+              <div class="cell blue"></div>
+              <div class="cell blue"></div>
+              <div class="cell blue"></div>
+              <div class="trapezoid-blue"></div>
+            </div>
+            <div class="rectangle west">
+              <div class="cell green"></div>
+              <div class="cell green"></div>
+              <div class="cell green"></div>
+              <div class="cell green"></div>
+              <div class="cell green"></div>
+              <div class="trapezoid-green"></div>
+            </div>
+            <div class="pawn north">
+              <span>&#9823;</span>
+            </div>
+            <div id="y-pawn" class="pawn south">
+              <span>&#9823;</span>
+            </div>
+            <div id="b-pawn" class="pawn east">
+              <span>&#9823;</span>
+            </div>
+            <div class="pawn west">
+              <span>&#9823;</span>
+            </div>
+            <!-- <div class="pawn temp">
+          <span>&#9823;</span>
+        </div> -->
+          </div>
+          <img id="ladder-1" src="images/Ladder 1.png" />
+          <img id="ladder-2" src="images/Ladder 2.png" />
+          <img id="snake-1" src="images/Snake 1.png" />
+          <img id="snake-2" src="images/Snake 2.png" />
+        </div>
+      </div>
+    </div>
+    <script>
+      // Position of Pawn
+      const positions = [
+        // 0
+        { top: "190px", left: "480px" },
+        // 1
+        { top: "190px", left: "480px" },
+        // 2
+        { top: "140px", left: "480px" },
+        // 3
+        { top: "95px", left: "460px" },
+        // 4
+        { top: "50px", left: "440px" },
+        // 5
+        { top: "0px", left: "410px" },
+        // 6
+        { top: "-20px", left: "370px" },
+        // 7
+        { top: "-40px", left: "325px" },
+        // 8
+        { top: "-60px", left: "280px" },
+        // 9
+        { top: "-60px", left: "230px" },
+        // 10
+        { top: "-70px", left: "170px" },
+        // 11
+        { top: "-60px", left: "125px" },
+        // 12
+        { top: "-40px", left: "75px" },
+        // 13
+        { top: "-20px", left: "35px" },
+        // 14
+        { top: "15px", left: "5px" },
+        // 15
+        { top: "65px", left: "-20px" },
+        // 16
+        { top: "110px", left: "-50px" },
+        // 17
+        { top: "160px", left: "-50px" },
+        // 18
+        { top: "210px", left: "-50px" },
+        // 19
+        { top: "255px", left: "-50px" },
+        // 20
+        { top: "300px", left: "-30px" },
+        // 21
+        { top: "340px", left: "-10px" },
+        // 22
+        { top: "380px", left: "20px" },
+        // 23
+        { top: "410px", left: "60px" },
+        // 24
+        { top: "440px", left: "100px" },
+        // 25
+        { top: "450px", left: "150px" },
+        // 26
+        { top: "450px", left: "190px" },
+        // 27
+        { top: "450px", left: "250px" },
+        // 28
+        // { top: "440px", left: "-10px" },
+        // 29
+        { top: "440px", left: "295px" },
+        // 30
+        { top: "420px", left: "340px" },
+        // 31
+        { top: "400px", left: "380px" },
+        // 32
+        { top: "360px", left: "410px" },
+        // 33
+        { top: "320px", left: "440px" },
+        // 34
+        { top: "280px", left: "460px" },
+        // 35
+        { top: "240px", left: "470px" },
+        // 36
+        { top: "190px", left: "470px" },
+        // 37
+        { top: "195px", left: "417px" },
+        // 38
+        { top: "195px", left: "387px" },
+        // 39
+        { top: "195px", left: "357px" },
+        // 40
+        { top: "195px", left: "327px" },
+        // 41
+        { top: "195px", left: "295px" },
+        // 42
+        { top: "195px", left: "240px" },
+      ];
+
+      let randomNumber = 0;
+      let currentNumber = 0,
+        pointer = 0;
+
+      // Random number
+      function nextNumber() {
+        // emptying the para
+        document.getElementById("next-number").innerHTML = "";
+
+        // generating random number
+        randomNumber = Math.floor(Math.random() * 6) + 1;
+
+        // disabling the buttons
+        document.getElementById("nextNumberButton").disabled = true;
+        document.getElementById("moveButton").disabled = false;
+
+        // entering text to para
+        var temp = document.createTextNode(randomNumber);
+        document.getElementById("next-number").appendChild(temp);
+      }
+
+      // Snake & Ladder Action
+      function moveSudden(number) {
+        const pawn = document.querySelector("#b-pawn");
+        const position = getPosition(pointer);
+        pawn.style.top = position.top;
+        pawn.style.left = position.left;
+      }
+
+      // To move pawn
+      function movePawn() {
+        currentNumber += randomNumber;
+        currentNumber %= 41;
+        // currentNumber = 41;
+
+        const pawn = document.querySelector("#b-pawn");
+        pawn.style.color = "black";
+        document.querySelector("#arrow").style.display = "none";
+
+        // Snakes && Ladders Logic
+        // Ladders
+        if (currentNumber == 2 || currentNumber == 19) {
+          currentNumber += 4;
+          alert("Got Ladder! Level up by 4");
+          pointer = currentNumber;
+          moveSudden(pointer);
+        }
+        // Snakes
+        if (currentNumber == 17) {
+          currentNumber -= 3;
+          alert("Got Snake! Level down by 3");
+          pointer = currentNumber;
+          moveSudden(pointer);
+        }
+        if (currentNumber == 34) {
+          currentNumber -= 5;
+          alert("Got Snake! Level down by 5");
+          pointer = currentNumber;
+          moveSudden(pointer);
+        }
+
+        // To move pawn one by one
+        function moveSequentially() {
+          if (pointer <= currentNumber) {
+            const position = getPosition(pointer);
+            pawn.style.top = position.top;
+            pawn.style.left = position.left;
+            pointer++;
+            setTimeout(moveSequentially, 1000); // Adjust the timeout as needed
+          } else {
+            document.getElementById("nextNumberButton").disabled = false;
+            document.getElementById("moveButton").disabled = true;
+          }
+        }
+
+        moveSequentially();
+      }
+
+      // Get position of the board
+      function getPosition(number) {
+        var pos = positions[number];
+        return { top: pos.top, left: pos.left };
+      }
+    </script>
+  </body>
+</html>
